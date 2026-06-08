@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% if page_title %}{{ page_title }}{% else %}МедЦентр{% endif %}{% endblock %} | МедЦентр Здоровье</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body { background: #f8f9fa; }
+        .navbar-brand { font-weight: 700; color: #0d6efd !important; }
+        .footer { background: #212529; color: #adb5bd; padding: 2rem 0; margin-top: 3rem; }
+        .card { box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+        .badge-rating { background: #ffc107; color: #212529; }
+        .sidebar-nav .nav-link { color: #495057; }
+        .sidebar-nav .nav-link:hover { background: #e9ecef; border-radius: 6px; }
+        .sidebar-nav .nav-link.active { background: #0d6efd; color: white; border-radius: 6px; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}"><i class="bi bi-heart-pulse-fill text-danger"></i> МедЦентр Здоровье</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="nav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'services_list' %}">Услуги</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'doctors_list' %}">Врачи</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'news_list' %}">Новости</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Центр</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'about' %}">О компании</a></li>
+                        <li><a class="dropdown-item" href="{% url 'contacts' %}">Контакты</a></li>
+                        <li><a class="dropdown-item" href="{% url 'vacancies' %}">Вакансии</a></li>
+                        <li><a class="dropdown-item" href="{% url 'glossary' %}">Словарь терминов</a></li>
+                        <li><a class="dropdown-item" href="{% url 'reviews' %}">Отзывы</a></li>
+                        <li><a class="dropdown-item" href="{% url 'promo_codes' %}">Промокоды</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'stats' %}">Статистика</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'weather' %}">Погода</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'exchange_rates' %}">Валюты</a></li>
+            </ul>
+            <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                    {% if user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link text-danger fw-bold" href="{% url 'admin_dashboard' %}">
+                                <i class="bi bi-speedometer2"></i> Панель
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            {% if user.is_superuser %}
+                                <i class="bi bi-shield-fill text-danger"></i>
+                            {% elif user.doctor %}
+                                <i class="bi bi-person-badge-fill text-success"></i>
+                            {% else %}
+                                <i class="bi bi-person-circle text-primary"></i>
+                            {% endif %}
+                            {{ user.get_full_name|default:user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% if user.is_superuser %}
+                                <li><span class="dropdown-item-text text-muted small"><i class="bi bi-shield-fill text-danger"></i> Администратор</span></li>
+                                <li><a class="dropdown-item" href="{% url 'admin_dashboard' %}"><i class="bi bi-speedometer2"></i> Панель управления</a></li>
+                                <li><a class="dropdown-item" href="{% url 'manage_clients' %}"><i class="bi bi-people"></i> Управление клиентами</a></li>
+                                <li><a class="dropdown-item" href="/admin/"><i class="bi bi-gear"></i> Django Admin</a></li>
+                            {% elif user.doctor %}
+                                <li><span class="dropdown-item-text text-muted small"><i class="bi bi-person-badge-fill text-success"></i> Врач</span></li>
+                                <li><a class="dropdown-item" href="{% url 'doctor_cabinet' %}"><i class="bi bi-hospital"></i> Кабинет врача</a></li>
+                            {% else %}
+                                <li><span class="dropdown-item-text text-muted small"><i class="bi bi-person-circle text-primary"></i> Клиент</span></li>
+                                <li><a class="dropdown-item" href="{% url 'cabinet' %}"><i class="bi bi-person"></i> Личный кабинет</a></li>
+                                <li><a class="dropdown-item" href="{% url 'create_appointment' %}"><i class="bi bi-calendar-plus"></i> Записаться</a></li>
+                                <li><a class="dropdown-item" href="{% url 'edit_profile' %}"><i class="bi bi-pencil"></i> Редактировать профиль</a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Выйти</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Войти</a></li>
+                    <li class="nav-item"><a class="btn btn-primary btn-sm ms-2 nav-link text-white" href="{% url 'register' %}">Регистрация</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="container py-4">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h6 class="text-white">МедЦентр Здоровье</h6>
+                <p class="small">Профессиональная медицинская помощь для всей семьи.</p>
+            </div>
+            <div class="col-md-4">
+                <h6 class="text-white">Навигация</h6>
+                <ul class="list-unstyled small">
+                    <li><a href="{% url 'privacy' %}" class="text-secondary">Политика конфиденциальности</a></li>
+                    <li><a href="{% url 'vacancies' %}" class="text-secondary">Вакансии</a></li>
+                    <li><a href="{% url 'parallel_demo' %}" class="text-secondary">Демо параллельности</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h6 class="text-white">Контакты</h6>
+                <p class="small">+375 (29) 100-00-01<br>info@medcenter.by</p>
+            </div>
+        </div>
+        <hr class="border-secondary">
+        <p class="text-center small mb-0">© 2024 МедЦентр Здоровье. Все права защищены.</p>
+    </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

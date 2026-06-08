@@ -1,0 +1,137 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<h2><i class="bi bi-speedometer2"></i> Панель администратора</h2>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-bg-primary">
+            <div class="card-body">
+                <h3 class="card-title">{{ total_clients }}</h3>
+                <p class="card-text">Клиентов</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-success">
+            <div class="card-body">
+                <h3 class="card-title">{{ total_doctors }}</h3>
+                <p class="card-text">Врачей</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-info">
+            <div class="card-body">
+                <h3 class="card-title">{{ total_appointments }}</h3>
+                <p class="card-text">Всего приёмов</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-warning">
+            <div class="card-body">
+                <h3 class="card-title">{{ monthly_revenue }} руб.</h3>
+                <p class="card-text">Выручка за месяц</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-bar-chart"></i> Статистика продаж</div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr><td>Средний чек</td><td class="fw-bold">{{ avg_sale }} руб.</td></tr>
+                    <tr><td>Медиана чека</td><td class="fw-bold">{{ median_sale }} руб.</td></tr>
+                    <tr><td>Средний возраст клиентов</td><td class="fw-bold">{{ avg_age }} лет</td></tr>
+                    <tr><td>Медиана возраста</td><td class="fw-bold">{{ median_age }} лет</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-trophy"></i> Топ услуг по приёмам</div>
+            <div class="card-body">
+                {% for svc in popular_services %}
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="small">{{ svc.name|truncatechars:30 }}</span>
+                    <span class="badge bg-primary">{{ svc.appt_count }}</span>
+                </div>
+                <div class="progress mb-2" style="height:6px">
+                    <div class="progress-bar" style="width:{{ svc.appt_count }}0%"></div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-graph-up"></i> Выручка за последние 6 месяцев</div>
+            <div class="card-body text-center">
+                {% if chart_image %}
+                <img src="data:image/png;base64,{{ chart_image }}" class="img-fluid" alt="График выручки" style="max-width:100%;">
+                {% else %}
+                <p class="text-muted">Данных для графика пока нет</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <span><i class="bi bi-people"></i> Клиенты (алфавитный порядок)</span>
+                <a href="{% url 'manage_clients' %}" class="btn btn-sm btn-outline-primary">Все</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>ФИО</th><th>Телефон</th><th>Email</th></tr></thead>
+                    <tbody>
+                    {% for c in clients_alpha|slice:":10" %}
+                    <tr>
+                        <td><a href="{% url 'client_detail_admin' c.pk %}">{{ c.get_full_name }}</a></td>
+                        <td>{{ c.phone }}</td>
+                        <td>{{ c.email }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-person-badge"></i> Врачи по приёмам</div>
+            <div class="table-responsive">
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Врач</th><th>Приёмов</th></tr></thead>
+                    <tbody>
+                    {% for doc in top_doctors %}
+                    <tr>
+                        <td><a href="{% url 'appointments_by_doctor' doc.pk %}">{{ doc.get_full_name }}</a></td>
+                        <td><span class="badge bg-success">{{ doc.appt_count }}</span></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="{% url 'manage_clients' %}" class="btn btn-outline-primary me-2"><i class="bi bi-people"></i> Управление клиентами</a>
+    <a href="/admin/" class="btn btn-outline-danger me-2"><i class="bi bi-shield-lock"></i> Django Admin</a>
+    <a href="{% url 'stats' %}" class="btn btn-outline-info"><i class="bi bi-bar-chart"></i> Детальная статистика</a>
+</div>
+{% endblock %}
+
+

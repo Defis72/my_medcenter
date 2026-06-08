@@ -1,0 +1,63 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<h2><i class="bi bi-list-stars"></i> Услуги</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-2">
+            <div class="col-md-3">
+                <select name="category" class="form-select">
+                    <option value="">Все категории</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="price_min" class="form-control" placeholder="Цена от" value="{{ request.GET.price_min }}">
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="price_max" class="form-control" placeholder="Цена до" value="{{ request.GET.price_max }}">
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="search" class="form-control" placeholder="Поиск..." value="{{ request.GET.search }}">
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i></button>
+            </div>
+            <div class="col-md-1">
+                <a href="{% url 'services_list' %}" class="btn btn-outline-secondary w-100">✕</a>
+            </div>
+        </form>
+        <div class="mt-2">
+            Сортировка:
+            <a href="?sort=name&{{ request.GET.urlencode }}" class="btn btn-sm btn-outline-secondary">По имени ↑</a>
+            <a href="?sort=price&{{ request.GET.urlencode }}" class="btn btn-sm btn-outline-secondary">По цене ↑</a>
+            <a href="?sort=-price&{{ request.GET.urlencode }}" class="btn btn-sm btn-outline-secondary">По цене ↓</a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    {% for service in services %}
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <span class="badge bg-secondary mb-2">{{ service.category.name }}</span>
+                <h6 class="card-title">{{ service.name }}</h6>
+                <p class="text-muted small">{{ service.description|truncatewords:15 }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-primary">{{ service.price }} руб.</span>
+                    <span class="text-muted small"><i class="bi bi-clock"></i> {{ service.duration_minutes }} мин</span>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{% url 'service_detail' service.pk %}" class="btn btn-sm btn-outline-primary w-100">Подробнее</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12"><div class="alert alert-info">Услуги не найдены.</div></div>
+    {% endfor %}
+</div>
+{% endblock %}

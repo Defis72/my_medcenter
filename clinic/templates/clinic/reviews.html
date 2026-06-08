@@ -1,0 +1,44 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<h2><i class="bi bi-chat-dots-fill"></i> Отзывы</h2>
+<div class="row">
+<div class="col-md-8">
+{% for review in reviews %}
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between">
+            <h6 class="fw-bold">{{ review.author_name }}</h6>
+            <div>{% for i in "12345" %}{% if forloop.counter <= review.rating %}<i class="bi bi-star-fill text-warning"></i>{% else %}<i class="bi bi-star text-warning"></i>{% endif %}{% endfor %}</div>
+        </div>
+        <p>{{ review.text }}</p>
+        <p class="text-muted small mb-0"><i class="bi bi-clock"></i> {{ review.created_at|date:"d/m/Y" }}</p>
+    </div>
+</div>
+{% empty %}
+<div class="alert alert-info">Отзывов пока нет.</div>
+{% endfor %}
+</div>
+<div class="col-md-4">
+<div class="card">
+    <div class="card-header"><i class="bi bi-plus-circle"></i> Оставить отзыв</div>
+    <div class="card-body">
+    {% if user.is_authenticated %}
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="mb-3">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary w-100">Отправить</button>
+    </form>
+    {% else %}
+    <p>Для добавления отзыва необходимо <a href="{% url 'login' %}">войти</a>.</p>
+    {% endif %}
+    </div>
+</div>
+</div>
+</div>
+{% endblock %}

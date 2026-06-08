@@ -1,0 +1,33 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-md-7">
+<div class="card">
+<div class="card-header"><h5><i class="bi bi-calendar-plus"></i> Запись на приём</h5></div>
+<div class="card-body">
+<form method="post" novalidate>
+{% csrf_token %}
+{% for field in form %}
+<div class="mb-3">
+<label class="form-label fw-semibold">{{ field.label }}</label>
+{% if field.field.widget.input_type == 'checkbox' %}
+    {% for checkbox in field %}
+        <div class="form-check">{{ checkbox.tag }} <label class="form-check-label">{{ checkbox.choice_label }}</label></div>
+    {% endfor %}
+{% else %}
+    <div class="{% if field.errors %}is-invalid{% endif %}">{{ field }}</div>
+{% endif %}
+{% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+{% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+</div>
+{% endfor %}
+<div class="d-flex gap-2">
+<button type="submit" class="btn btn-success"><i class="bi bi-check-circle"></i> Записаться</button>
+<a href="{% url 'cabinet' %}" class="btn btn-outline-secondary">Отмена</a>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

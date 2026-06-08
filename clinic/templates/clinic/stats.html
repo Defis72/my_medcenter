@@ -1,0 +1,95 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<h2><i class="bi bi-bar-chart-line"></i> Статистика и дата/время</h2>
+
+<div class="row g-3 mb-3">
+  <!-- UTC and Server Time -->
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-header"><i class="bi bi-clock-history"></i> Текущее время</div>
+      <div class="card-body">
+        <table class="table table-sm mb-0">
+          <tr>
+            <td>Время UTC (сервер)</td>
+            <td class="fw-bold font-monospace text-primary">{{ now_utc }}</td>
+          </tr>
+          <tr>
+            <td>Время сервера ({{ server_tz }})</td>
+            <td class="fw-bold font-monospace text-success">{{ now_local }}</td>
+          </tr>
+          <tr>
+            <td>Время вашего браузера</td>
+            <td class="fw-bold font-monospace text-warning" id="browser-time">—</td>
+          </tr>
+          <tr>
+            <td>Ваша таймзона</td>
+            <td class="font-monospace text-muted" id="browser-tz">—</td>
+          </tr>
+        </table>
+        <small class="text-muted">Дата сохраняется в UTC, отображается в таймзоне сервера.</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Text Calendar (Python calendar module) -->
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-header"><i class="bi bi-calendar3"></i> Календарь (Python calendar)</div>
+      <div class="card-body">
+        <pre class="mb-0 user-select-all" style="font-size:0.95rem;">{{ calendar }}</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <!-- Appointment statistics -->
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-calendar2-check"></i> Статистика приёмов</div>
+      <div class="card-body">
+        <table class="table table-sm mb-0">
+          <tr><td>Всего приёмов</td><td><span class="badge bg-primary fs-6">{{ appt_stats.total }}</span></td></tr>
+          <tr><td>Завершено</td><td><span class="badge bg-success fs-6">{{ appt_stats.completed }}</span></td></tr>
+          <tr><td>Запланировано</td><td><span class="badge bg-info fs-6">{{ appt_stats.planned }}</span></td></tr>
+          <tr><td>Отменено</td><td><span class="badge bg-danger fs-6">{{ appt_stats.cancelled }}</span></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top doctors -->
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-person-badge"></i> Топ врачей по приёмам</div>
+      <div class="card-body">
+        {% for doc in top_doctors %}
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span>{{ doc.get_full_name }}</span>
+          <span class="badge bg-success">{{ doc.appt_count }} приём(ов)</span>
+        </div>
+        {% empty %}
+        <p class="text-muted mb-0">Данных пока нет</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+// Show browser local time and timezone (user side)
+function updateBrowserTime() {
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    const formatted = `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} `
+                    + `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    document.getElementById('browser-time').textContent = formatted;
+    document.getElementById('browser-tz').textContent =
+        Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+updateBrowserTime();
+setInterval(updateBrowserTime, 1000);
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<h2><i class="bi bi-person-circle"></i> Личный кабинет</h2>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">Мой профиль</div>
+            <div class="card-body">
+                {% if client %}
+                    <p><strong>ФИО:</strong> {{ client.get_full_name }}</p>
+                    <p><strong>Дата рождения:</strong> {{ client.date_of_birth|date:"d/m/Y" }}</p>
+                    <p><strong>Телефон:</strong> {{ client.phone }}</p>
+                    <p><strong>Email:</strong> {{ client.email }}</p>
+                    {% if client.address %}<p><strong>Адрес:</strong> {{ client.address }}</p>{% endif %}
+                    <a href="{% url 'edit_profile' %}" class="btn btn-outline-primary btn-sm">Редактировать</a>
+                {% else %}
+                    <div class="alert alert-warning">Профиль не заполнен.</div>
+                    <a href="{% url 'edit_profile' %}" class="btn btn-primary btn-sm">Заполнить профиль</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="d-grid">
+            <a href="{% url 'create_appointment' %}" class="btn btn-success">
+                <i class="bi bi-calendar-plus"></i> Записаться на приём
+            </a>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-calendar2-check"></i> Мои приёмы</div>
+            <div class="card-body">
+                {% if appointments %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead><tr><th>Дата</th><th>Врач</th><th>Услуги</th><th>Стоимость</th><th>Статус</th></tr></thead>
+                        <tbody>
+                        {% for appt in appointments %}
+                        <tr>
+                            <td>{{ appt.appointment_date|date:"d/m/Y H:i" }}</td>
+                            <td>{{ appt.doctor.get_full_name }}</td>
+                            <td>{% for s in appt.services.all %}{{ s.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                            <td>{{ appt.total_cost }} руб.</td>
+                            <td>
+                                {% if appt.status == 'planned' %}<span class="badge bg-primary">Запланирован</span>
+                                {% elif appt.status == 'completed' %}<span class="badge bg-success">Завершён</span>
+                                {% else %}<span class="badge bg-danger">Отменён</span>{% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">У вас пока нет записей.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

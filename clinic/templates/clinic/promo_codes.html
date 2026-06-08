@@ -1,0 +1,28 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<h2><i class="bi bi-ticket-perforated-fill"></i> Промокоды и купоны</h2>
+<h5 class="text-success mt-3"><i class="bi bi-check-circle"></i> Активные</h5>
+{% for promo in active_promos %}
+<div class="card mb-3 border-success">
+    <div class="card-body">
+        <div class="d-flex justify-content-between">
+            <h5 class="font-monospace text-success fw-bold">{{ promo.code }}</h5>
+            <span class="badge bg-success fs-6">-{{ promo.discount_percent }}%</span>
+        </div>
+        <p>{{ promo.description }}</p>
+        <p class="small text-muted mb-0">Действует: {{ promo.valid_from|date:"d/m/Y" }} — {{ promo.valid_to|date:"d/m/Y" }}</p>
+    </div>
+</div>
+{% empty %}<p class="text-muted">Активных промокодов нет.</p>{% endfor %}
+
+<h5 class="text-muted mt-4"><i class="bi bi-archive"></i> Архив</h5>
+{% for promo in archive_promos %}
+<div class="card mb-2 opacity-50">
+    <div class="card-body py-2">
+        <span class="font-monospace fw-bold">{{ promo.code }}</span>
+        <span class="badge bg-secondary ms-2">{{ promo.discount_percent }}%</span>
+        <span class="text-muted small ms-2">{{ promo.description }}</span>
+    </div>
+</div>
+{% empty %}<p class="text-muted">Архив пуст.</p>{% endfor %}
+{% endblock %}

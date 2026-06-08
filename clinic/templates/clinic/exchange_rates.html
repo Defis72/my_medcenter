@@ -1,0 +1,20 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<h2><i class="bi bi-currency-exchange"></i> Курсы валют</h2>
+{% if error %}<div class="alert alert-warning">{{ error }}</div>{% endif %}
+{% if rates %}
+<div class="card" style="max-width:350px">
+<div class="card-header">Относительно BYN (Белорусский рубль)</div>
+<div class="list-group list-group-flush">
+{% for currency, rate in rates.items %}
+<div class="list-group-item d-flex justify-content-between">
+<span class="fw-bold">{{ currency }}</span>
+<span>{{ rate }}</span>
+</div>
+{% endfor %}
+</div>
+</div>
+{% else %}
+<div class="alert alert-info">Данные недоступны. Добавьте API ключ в .env файл.</div>
+{% endif %}
+{% endblock %}

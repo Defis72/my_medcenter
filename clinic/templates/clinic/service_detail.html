@@ -1,0 +1,19 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<a href="{% url 'services_list' %}" class="btn btn-sm btn-outline-secondary mb-3">← Назад к услугам</a>
+<div class="card">
+<div class="card-body">
+<span class="badge bg-secondary mb-2">{{ service.category.name }}</span>
+<h3>{{ service.name }}</h3>
+<p class="display-6 text-primary fw-bold">{{ service.price }} руб.</p>
+<p><i class="bi bi-clock"></i> Длительность: {{ service.duration_minutes }} минут</p>
+<hr>
+<p>{{ service.description }}</p>
+{% if user.is_authenticated %}
+<a href="{% url 'create_appointment' %}" class="btn btn-success"><i class="bi bi-calendar-plus"></i> Записаться</a>
+{% else %}
+<a href="{% url 'login' %}" class="btn btn-outline-primary">Войдите для записи</a>
+{% endif %}
+</div>
+</div>
+{% endblock %}

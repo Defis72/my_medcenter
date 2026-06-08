@@ -1,0 +1,66 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<h2><i class="bi bi-telephone-fill"></i> Контакты</h2>
+
+<!-- Company address block -->
+<div class="card mb-4 border-primary">
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <p class="mb-1"><i class="bi bi-geo-alt-fill text-danger"></i> <strong>Адрес:</strong></p>
+        <p class="ms-3">г. Минск, ул. Независимости, 100</p>
+      </div>
+      <div class="col-md-4">
+        <p class="mb-1"><i class="bi bi-telephone-fill text-success"></i> <strong>Телефон:</strong></p>
+        <p class="ms-3"><a href="tel:+375291000001">+375 (29) 100-00-01</a></p>
+      </div>
+      <div class="col-md-4">
+        <p class="mb-1"><i class="bi bi-clock-fill text-primary"></i> <strong>Режим работы:</strong></p>
+        <p class="ms-3">Пн–Пт: 8:00–20:00, Сб: 9:00–16:00</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h4 class="mb-3">Сотрудники</h4>
+<div class="row g-3">
+  {% for contact in contacts %}
+  <div class="col-md-6 col-lg-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body text-center">
+        <!-- Photo — always shown, either real or colored placeholder -->
+        {% if contact.photo_data %}
+          <img src="data:image/jpeg;base64,{{ contact.photo_data }}"
+               class="rounded-circle mb-3 border border-3 border-primary"
+               style="width:100px;height:100px;object-fit:cover;"
+               alt="{{ contact.full_name }}">
+        {% else %}
+          <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center
+                      justify-content-center mb-3 border border-3 border-primary"
+               style="width:100px;height:100px;font-size:2.5rem;">
+            <i class="bi bi-person-fill"></i>
+          </div>
+        {% endif %}
+        <h5 class="fw-bold mb-1">{{ contact.full_name }}</h5>
+        <p class="badge bg-primary mb-2">{{ contact.position }}</p>
+        {% if contact.description %}
+          <p class="text-muted small">{{ contact.description }}</p>
+        {% endif %}
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item small text-center">
+          <i class="bi bi-telephone text-success"></i>
+          <a href="tel:{{ contact.phone }}">{{ contact.phone }}</a>
+        </li>
+        <li class="list-group-item small text-center">
+          <i class="bi bi-envelope text-primary"></i>
+          <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12"><div class="alert alert-info">Контакты не добавлены.</div></div>
+  {% endfor %}
+</div>
+{% endblock %}

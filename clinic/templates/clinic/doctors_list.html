@@ -1,0 +1,55 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-person-badge"></i> Врачи</h2>
+</div>
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-2">
+            <div class="col-md-4">
+                <input type="text" name="search" class="form-control" placeholder="Имя или специализация..." value="{{ request.GET.search }}">
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="department" class="form-control" placeholder="Отделение..." value="{{ request.GET.department }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i> Найти</button>
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'doctors_list' %}" class="btn btn-outline-secondary w-100">Сбросить</a>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row g-3">
+    {% for doctor in doctors %}
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                {% if doctor.photo_data %}
+                    <img src="data:image/jpeg;base64,{{ doctor.photo_data }}" class="rounded-circle mb-3" style="width:80px;height:80px;object-fit:cover">
+                {% else %}
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width:80px;height:80px;font-size:2rem">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                {% endif %}
+                <h6 class="fw-bold">{{ doctor.get_full_name }}</h6>
+                <p class="text-muted small">
+                    {% for spec in doctor.specializations.all %}
+                        <span class="badge bg-light text-dark border">{{ spec.name }}</span>
+                    {% endfor %}
+                </p>
+                <p class="small"><i class="bi bi-building"></i> {{ doctor.department.name|default:"—" }}</p>
+                <p class="small"><i class="bi bi-award"></i> {{ doctor.category.name|default:"—" }}</p>
+                <p class="small"><i class="bi bi-calendar2-check"></i> Стаж: {{ doctor.experience_years }} лет</p>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{% url 'doctor_detail' doctor.pk %}" class="btn btn-sm btn-outline-primary w-100">Подробнее</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12"><div class="alert alert-info">Врачи не найдены.</div></div>
+    {% endfor %}
+</div>
+{% endblock %}

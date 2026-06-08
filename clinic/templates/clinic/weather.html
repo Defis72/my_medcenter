@@ -1,0 +1,25 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<h2><i class="bi bi-cloud-sun-fill"></i> Погода</h2>
+<form method="get" class="mb-3 d-flex gap-2">
+    <input type="text" name="city" class="form-control" placeholder="Город" value="{{ city }}" style="max-width:250px">
+    <button type="submit" class="btn btn-primary">Найти</button>
+</form>
+{% if error %}<div class="alert alert-warning">{{ error }}</div>{% endif %}
+{% if weather %}
+<div class="card" style="max-width:400px">
+<div class="card-body text-center">
+<h4>{{ weather.name }}</h4>
+{% if weather.weather %}
+<p class="text-muted">{{ weather.weather.0.description|capfirst }}</p>
+{% endif %}
+<h1 class="display-3 fw-bold text-primary">{{ weather.main.temp|floatformat:0 }}°C</h1>
+<div class="row text-center mt-3">
+<div class="col"><small class="text-muted">Ощущается</small><br><strong>{{ weather.main.feels_like|floatformat:0 }}°C</strong></div>
+<div class="col"><small class="text-muted">Влажность</small><br><strong>{{ weather.main.humidity }}%</strong></div>
+<div class="col"><small class="text-muted">Ветер</small><br><strong>{{ weather.wind.speed }} м/с</strong></div>
+</div>
+</div>
+</div>
+{% endif %}
+{% endblock %}

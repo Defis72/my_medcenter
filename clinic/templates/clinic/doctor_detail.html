@@ -1,0 +1,67 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body p-4">
+                {% if doctor.photo_data %}
+                    <img src="data:image/jpeg;base64,{{ doctor.photo_data }}" class="rounded-circle mb-3" style="width:120px;height:120px;object-fit:cover">
+                {% else %}
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width:120px;height:120px;font-size:3rem">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                {% endif %}
+                <h5 class="fw-bold">{{ doctor.get_full_name }}</h5>
+                <p class="text-muted">
+                    {% for spec in doctor.specializations.all %}
+                        <span class="badge bg-primary me-1">{{ spec.name }}</span>
+                    {% endfor %}
+                </p>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><i class="bi bi-building me-2"></i>{{ doctor.department.name|default:"—" }}</li>
+                <li class="list-group-item"><i class="bi bi-award me-2"></i>{{ doctor.category.name|default:"—" }}</li>
+                <li class="list-group-item"><i class="bi bi-calendar2 me-2"></i>Стаж: {{ doctor.experience_years }} лет</li>
+                <li class="list-group-item"><i class="bi bi-telephone me-2"></i>{{ doctor.phone }}</li>
+                <li class="list-group-item"><i class="bi bi-envelope me-2"></i>{{ doctor.email }}</li>
+            </ul>
+        </div>
+        {% if user.is_authenticated %}
+        <div class="mt-3">
+            <a href="{% url 'create_appointment' %}" class="btn btn-success w-100">
+                <i class="bi bi-calendar-plus"></i> Записаться к этому врачу
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-md-8">
+        {% if doctor.bio %}
+        <div class="card mb-3">
+            <div class="card-header">О враче</div>
+            <div class="card-body">{{ doctor.bio }}</div>
+        </div>
+        {% endif %}
+        <div class="card">
+            <div class="card-header"><i class="bi bi-calendar-week"></i> Расписание приёма</div>
+            <div class="card-body">
+                {% if schedule %}
+                <table class="table table-sm">
+                    <thead><tr><th>День</th><th>Начало</th><th>Конец</th></tr></thead>
+                    <tbody>
+                        {% for s in schedule %}
+                        <tr>
+                            <td>{{ s.get_weekday_display }}</td>
+                            <td>{{ s.time_from|time:"H:i" }}</td>
+                            <td>{{ s.time_to|time:"H:i" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted">Расписание не указано.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

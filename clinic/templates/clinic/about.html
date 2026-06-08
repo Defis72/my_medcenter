@@ -1,0 +1,33 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<h2><i class="bi bi-building"></i> О компании</h2>
+{% if company %}
+<div class="card mb-4">
+    <div class="card-body">
+        <h4>{{ company.name }}</h4>
+        <p>{{ company.description }}</p>
+        {% if company.address %}<p><i class="bi bi-geo-alt"></i> {{ company.address }}</p>{% endif %}
+        {% if company.phone %}<p><i class="bi bi-telephone"></i> {{ company.phone }}</p>{% endif %}
+        {% if company.founded_year %}<p><i class="bi bi-calendar"></i> Основан в {{ company.founded_year }} году</p>{% endif %}
+        {% if company.inn %}<p><i class="bi bi-file-text"></i> ИНН: {{ company.inn }}</p>{% endif %}
+    </div>
+</div>
+{% if company.history.all %}
+<div class="card">
+    <div class="card-header"><i class="bi bi-clock-history"></i> История</div>
+    <div class="card-body">
+        <div class="timeline">
+            {% for event in company.history.all %}
+            <div class="d-flex mb-3">
+                <div class="me-3"><span class="badge bg-primary fs-6">{{ event.year }}</span></div>
+                <div>{{ event.event }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% else %}
+<div class="alert alert-info">Информация о компании не добавлена.</div>
+{% endif %}
+{% endblock %}

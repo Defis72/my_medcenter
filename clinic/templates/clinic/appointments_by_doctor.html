@@ -1,0 +1,22 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<a href="{% url 'admin_dashboard' %}" class="btn btn-sm btn-outline-secondary mb-3">← Назад</a>
+<h3>Приёмы: {{ doctor.get_full_name }}</h3>
+<div class="card">
+<div class="table-responsive">
+<table class="table table-hover mb-0">
+<thead><tr><th>Дата</th><th>Клиент</th><th>Услуги</th><th>Статус</th></tr></thead>
+<tbody>
+{% for appt in appointments %}
+<tr>
+<td>{{ appt.appointment_date|date:"d/m/Y H:i" }}</td>
+<td><a href="{% url 'client_detail_admin' appt.client.pk %}">{{ appt.client.get_full_name }}</a></td>
+<td>{% for s in appt.services.all %}{{ s.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+<td>{% if appt.status == 'planned' %}<span class="badge bg-primary">Запл.</span>{% elif appt.status == 'completed' %}<span class="badge bg-success">Завер.</span>{% else %}<span class="badge bg-danger">Отм.</span>{% endif %}</td>
+</tr>
+{% empty %}<tr><td colspan="4" class="text-muted text-center">Приёмов нет.</td></tr>{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<h2><i class="bi bi-cpu"></i> Демонстрация параллельности в Python</h2>
+<p class="text-muted">Дополнительное задание ЛР №5 — многозадачность (Threading + Asyncio)</p>
+<div class="row g-3">
+<div class="col-md-6">
+<div class="card">
+<div class="card-header text-bg-info"><i class="bi bi-arrow-left-right"></i> Threading — параллельный расчёт скидок</div>
+<div class="card-body">
+<p><strong>Задача:</strong> 10 потоков одновременно применяют скидку 10% к ценам услуг.</p>
+<p><strong>Время выполнения:</strong> <span class="badge bg-info fs-6">{{ results.threading.time }} сек</span></p>
+<p><strong>Итоговая сумма со скидкой:</strong> {{ results.threading.sum }} руб.</p>
+<p><strong>Обработано цен:</strong></p>
+<div class="d-flex flex-wrap gap-1">
+{% for p in results.threading.totals %}
+<span class="badge bg-light text-dark border">{{ p|floatformat:1 }}</span>
+{% endfor %}
+</div>
+<hr>
+<p class="small text-muted">Используется <code>threading.Thread</code> и <code>threading.Lock</code> для защиты общего списка от race condition.</p>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="card">
+<div class="card-header text-bg-success"><i class="bi bi-arrow-repeat"></i> Asyncio — асинхронная загрузка данных</div>
+<div class="card-body">
+<p><strong>Задача:</strong> 10 асинхронных запросов к данным пациентов выполняются конкурентно.</p>
+<p><strong>Время выполнения:</strong> <span class="badge bg-success fs-6">{{ results.asyncio.time }} сек</span></p>
+<p><strong>Обработано запросов:</strong> {{ results.asyncio.count }}</p>
+<p><strong>Пример результатов:</strong></p>
+{% for item in results.asyncio.sample %}
+<div class="alert alert-light py-1 mb-1 small"><strong>ID {{ item.id }}:</strong> {{ item.status }} — {{ item.data }}</div>
+{% endfor %}
+<hr>
+<p class="small text-muted">Используется <code>asyncio.gather()</code> для конкурентного выполнения корутин. Asyncio работает в одном потоке, но обрабатывает несколько задач через event loop.</p>
+</div>
+</div>
+</div>
+<div class="col-12">
+<div class="card">
+<div class="card-header"><i class="bi bi-info-circle"></i> Пояснение</div>
+<div class="card-body">
+<p><strong>Threading</strong> подходит для I/O-задач. Потоки разделяют память и используют Lock для безопасного доступа. GIL не позволяет параллельно выполнять Python-код, но при ожидании I/O потоки работают конкурентно.</p>
+<p class="mb-0"><strong>Asyncio</strong> — кооперативная многозадачность в одном потоке. Функция сама решает, когда отдать управление через <code>await</code>. Идеально для большого числа лёгких сетевых задач.</p>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

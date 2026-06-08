@@ -1,0 +1,9 @@
+[run]
+omit =
+    clinic/management/commands/seed_data.py
+    clinic/migrations/*
+
+[report]
+omit =
+    clinic/management/commands/seed_data.py
+    clinic/migrations/*
