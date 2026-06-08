@@ -6,11 +6,21 @@
 {% for review in reviews %}
 <div class="card mb-3">
     <div class="card-body">
-        <div class="d-flex justify-content-between">
-            <h6 class="fw-bold">{{ review.author_name }}</h6>
-            <div>{% for i in "12345" %}{% if forloop.counter <= review.rating %}<i class="bi bi-star-fill text-warning"></i>{% else %}<i class="bi bi-star text-warning"></i>{% endif %}{% endfor %}</div>
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h6 class="fw-bold mb-1">{{ review.author_name }}</h6>
+                <div>{% for i in "12345" %}{% if forloop.counter <= review.rating %}<i class="bi bi-star-fill text-warning"></i>{% else %}<i class="bi bi-star text-warning"></i>{% endif %}{% endfor %}</div>
+            </div>
+            {% if user.is_authenticated %}
+                {% if review.user == user or user.is_superuser %}
+                <a href="{% url 'delete_review' review.pk %}"
+                   class="btn btn-outline-danger btn-sm">
+                   <i class="bi bi-trash"></i>
+                </a>
+                {% endif %}
+            {% endif %}
         </div>
-        <p>{{ review.text }}</p>
+        <p class="mt-2">{{ review.text }}</p>
         <p class="text-muted small mb-0"><i class="bi bi-clock"></i> {{ review.created_at|date:"d/m/Y" }}</p>
     </div>
 </div>

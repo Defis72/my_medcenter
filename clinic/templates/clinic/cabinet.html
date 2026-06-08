@@ -45,6 +45,14 @@
                                 {% elif appt.status == 'completed' %}<span class="badge bg-success">Завершён</span>
                                 {% else %}<span class="badge bg-danger">Отменён</span>{% endif %}
                             </td>
+                            <td>
+                                {% if appt.status == 'planned' %}
+                                <a href="{% url 'cancel_appointment' appt.pk %}"
+                                   class="btn btn-outline-danger btn-sm">
+                                   <i class="bi bi-x"></i> Отменить
+                                </a>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% endfor %}
                         </tbody>

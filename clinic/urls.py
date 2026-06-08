@@ -11,6 +11,7 @@ urlpatterns = [
     path('contacts/', views.contacts, name='contacts'),
     path('vacancies/', views.vacancies, name='vacancies'),
     path('reviews/', views.reviews, name='reviews'),
+    re_path(r'^reviews/(?P<pk>\d+)/delete/$', views.delete_review, name='delete_review'),
     path('privacy/', views.privacy, name='privacy'),
     path('promo-codes/', views.promo_codes, name='promo_codes'),
 
@@ -29,6 +30,7 @@ urlpatterns = [
     path('cabinet/', views.cabinet, name='cabinet'),
     path('cabinet/doctor/', views.doctor_cabinet, name='doctor_cabinet'),
     path('cabinet/appointment/new/', views.create_appointment, name='create_appointment'),
+    re_path(r'^cabinet/appointment/(?P<pk>\d+)/cancel/$', views.cancel_appointment, name='cancel_appointment'),
     path('cabinet/profile/edit/', views.edit_profile, name='edit_profile'),
 
     # Admin views

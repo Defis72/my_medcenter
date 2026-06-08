@@ -116,6 +116,23 @@ def reviews(request):
                   {'reviews': reviews_list, 'form': form, 'page_title': 'Отзывы'})
 
 
+@login_required
+def delete_review(request, pk):
+    review = get_object_or_404(Review, pk=pk)
+    # Удалить может: автор отзыва или суперпользователь
+    if review.user != request.user and not request.user.is_superuser:
+        messages.error(request, 'Нет прав для удаления этого отзыва.')
+        return redirect('reviews')
+    if request.method == 'POST':
+        review.delete()
+        messages.success(request, 'Отзыв удалён.')
+        return redirect('reviews')
+    return render(request, 'clinic/review_confirm_delete.html', {
+        'review': review,
+        'page_title': 'Удаление отзыва',
+    })
+
+
 def privacy(request):
     return render(request, 'clinic/privacy.html', {'page_title': 'Политика конфиденциальности'})
 
@@ -316,6 +333,36 @@ def create_appointment(request):
         form = AppointmentForm()
     return render(request, 'clinic/appointment_form.html',
                   {'form': form, 'page_title': 'Запись на приём'})
+
+
+@login_required
+def cancel_appointment(request, pk):
+    appointment = get_object_or_404(Appointment, pk=pk)
+    # Клиент может удалить только свою запись
+    try:
+        client = Client.objects.get(user=request.user)
+    except Client.DoesNotExist:
+        messages.error(request, 'Профиль клиента не найден.')
+        return redirect('cabinet')
+
+    if appointment.client != client:
+        messages.error(request, 'Нет доступа к этой записи.')
+        return redirect('cabinet')
+
+    if appointment.status == 'completed':
+        messages.error(request, 'Нельзя отменить завершённый приём.')
+        return redirect('cabinet')
+
+    if request.method == 'POST':
+        appointment.status = 'cancelled'
+        appointment.save()
+        messages.success(request, 'Запись успешно отменена.')
+        return redirect('cabinet')
+
+    return render(request, 'clinic/appointment_cancel.html', {
+        'appointment': appointment,
+        'page_title': 'Отмена записи',
+    })
 
 
 @login_required

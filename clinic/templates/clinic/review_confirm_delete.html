@@ -1,0 +1,36 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-md-6">
+  <div class="card border-danger">
+    <div class="card-header bg-danger text-white">
+      <h5 class="mb-0"><i class="bi bi-trash"></i> Удаление отзыва</h5>
+    </div>
+    <div class="card-body">
+      <p>Вы уверены что хотите удалить этот отзыв?</p>
+      <div class="card mb-3">
+        <div class="card-body">
+          <p class="fw-bold mb-1">{{ review.author_name }}
+            <span class="text-warning">
+              {% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}
+            </span>
+          </p>
+          <p class="mb-0 text-muted">{{ review.text }}</p>
+        </div>
+      </div>
+      <form method="post">
+        {% csrf_token %}
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-danger">
+            <i class="bi bi-trash"></i> Да, удалить
+          </button>
+          <a href="{% url 'reviews' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Отмена
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
